@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react'
-// import Rating from '@mui/material/Rating'
-// import Close from '@mui/icons-material/Close';
+import Rating from '@mui/material/Rating'
+import Close from '@mui/icons-material/Close';  
 import './App.css'
 
 const PostContext = createContext(); 
@@ -16,7 +16,7 @@ function App() {
   async function searchMovie(search){
     try {
       const res = await fetch(`https://www.omdbapi.com/?apikey=3c7f297a&s=${search}`)
-      const data = await res.join()
+      const data = await res.json()
       console.log(data);
       setMovieList(data)
     } catch (error) {
@@ -57,6 +57,7 @@ function App() {
         <div className='mainContainer'>
         <div className="left">
           {
+          
             movieList?.Response === "True" ?
             movieList?.Search.map((movie, index) => (
               <Movie key={index} movie={movie} />
@@ -116,15 +117,16 @@ function Topbar (){
 }
 
 //--------------------------left movie list container---------------------------//
-function Movie (){
-  const {movie, singleMovieDetails} = useContext(PostContext)
+function Movie ({movie}){
+  const { singleMovieDetails} = useContext(PostContext)
+ 
 
   return(
     <div className="box" onClick={()=> singleMovieDetails(movie.imdbID)}>
-      <img src={movie.Poster || `https://cdn.vectorstock.com/i/preview-1x/82/99/no-image-available-like-missing-picture-vector-43938299.jpg` } alt="" />
+      <img src={movie?.Poster || `https://cdn.vectorstock.com/i/preview-1x/82/99/no-image-available-like-missing-picture-vector-43938299.jpg` } alt="" />
       <div className='text'>
-        <p>{movie.Title}</p>
-        <p>📅{movie.Year}</p>
+        <p>{movie?.Title}</p>
+        <p>📅{movie?.Year}</p>
       </div>
 
     </div>
@@ -150,7 +152,7 @@ function Stats(){
 
 function MovieStats(){
   const {singleMovie} =  useContext(PostContext)
-
+  console.log(singleMovie)
 return(
   <>
   <div className="movieStatContainer">
@@ -178,18 +180,18 @@ return(
 //---------------------------------My rating---------------------------//
 
 function MyRatings(){
-  const {starValue} = useContext(PostContext)
+  const {starValue, setStarValue} = useContext(PostContext)
   return(
     <div className="myRatingContainer">
       <div style={{display: "flex", alignItems: "center"}}>
         <div className='stars'>
-          {/* <Rating  name="simple-controlled"
+          <Rating  name="simple-controlled"
               max={10}
               value={starValue}
               onChange={(event, newValue) => {
                 setStarValue(newValue);
               }}
-              /> */}
+              />
         </div>
         <p style={{ margin: "0px 10px" }}>{starValue}</p>
       </div>
@@ -202,6 +204,7 @@ function MyRatings(){
  function AddToListBtn(){
   const { setIsMovieTrue, setMovieWatchedList, movieWatchedList, singleMovie} = useContext(PostContext)
   function watchListHandler() {
+    console.log(singleMovie)
     setMovieWatchedList([...movieWatchedList, singleMovie])
   }
 
@@ -232,21 +235,22 @@ function MyRatings(){
 
 //---------------------------------watched movie contaniner---------------------------//
 
-function WatchedMovie() {
-  const {movie, starValue} = useContext(PostContext)
+function WatchedMovie(movie) {
+  const { starValue} = useContext(PostContext)
+  console.log(movie)
   return (
     <div style={{ margin: "8px 0px" }}>
       <div className="box" onClick={() => { }}>
-        <img src={movie.Poster || `https://cdn.vectorstock.com/i/preview-1x/82/99/no-image-available-like-missing-picture-vector-43938299.jpg`} alt="" className="poster" />
+        <img src={movie?.Poster || `https://cdn.vectorstock.com/i/preview-1x/82/99/no-image-available-like-missing-picture-vector-43938299.jpg`} alt="" className="poster" />
         <div className="text">
-          <p>{movie.Title}</p>
+          <p>{movie?.Title}</p>
           <div style={{ display: "flex" }}>
             <p style={{ margin: "0px 3px" }}>⭐ {movie.imdbRating || 0}</p>
             <p style={{ margin: "0px 3px" }}>🌟 {starValue || 0}</p>
             <p style={{ margin: "0px 3px" }}>⏳ {movie.Runtime || 0}</p>
           </div>
         </div>
-        {/* <Close style={{ marginLeft: "auto" }} /> */}
+        <Close style={{ marginLeft: "auto" }} />
       </div>
     </div>
   )
